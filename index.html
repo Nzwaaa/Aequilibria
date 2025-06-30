@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aequilibria - Emotional Balance Journal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-brain logo-icon"></i>
+                <span>Aequilibria</span>
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#heroSection">Home</a></li>
+                    <li><a href="#journalSection">Journal</a></li>
+                    <li><a href="#statisticsSection">Statistics</a></li>
+                    <li><a href="#historySection">History</a></li>
+                </ul>
+            </nav>
+            <div class="nav-right">
+                <div class="auth-buttons" id="authButtons">
+                    <button class="btn btn-outline" onclick="openModal('login')">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="btn btn-primary" onclick="openModal('register')">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+                </div>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span id="userName">Sarah</span>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero" id="heroSection">
+            <div class="hero-container">
+                <h1>Aequilibria: Find Your Emotional Balance</h1>
+                <p>Track your emotional journey and gain insights through journaling</p>
+                
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" style="font-size: 18px; padding: 16px 35px;" onclick="showSection('journalSection')">
+                        <i class="fas fa-book-open"></i> Start Journaling
+                    </button>
+                    <button class="btn btn-outline" style="font-size: 18px; padding: 16px 35px;" onclick="showSection('statisticsSection')">
+                        <i class="fas fa-chart-line"></i> View Statistics
+                    </button>
+                </div>
+                
+                <div class="hero-features fade-in">
+                    <div class="feature-card slide-in">
+                        <div class="feature-icon"><i class="fas fa-calendar"></i></div>
+                        <h3>Calendar Journal</h3>
+                        <p>Track your emotions day by day with our intuitive calendar interface</p>
+                    </div>
+                    <div class="feature-card slide-in" style="animation-delay: 0.2s;">
+                        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3>Emotional Insights</h3>
+                        <p>Visualize your emotional trends and patterns over time</p>
+                    </div>
+                    <div class="feature-card slide-in" style="animation-delay: 0.4s;">
+                        <div class="feature-icon"><i class="fas fa-music"></i></div>
+                        <h3>Personalized Recommendations</h3>
+                        <p>Music and activities tailored to your emotional state</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="journal-section" id="journalSection">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Your Emotional Journal</h2>
+                    <p class="section-subtitle">Select a date and write about your day to gain emotional insights</p>
+                </div>
+                
+                <div class="journal-container">
+                    <div class="form-card fade-in">
+                        <h3><i class="fas fa-calendar"></i> Calendar Journal</h3>
+                        
+                        <div class="calendar-container">
+                            <div class="calendar-header">
+                                <div class="calendar-nav">
+                                    <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                                    <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                                <div class="calendar-month" id="currentMonth">June 2025</div>
+                            </div>
+                            <div class="calendar-grid">
+                                <div class="calendar-weekday">Sun</div>
+                                <div class="calendar-weekday">Mon</div>
+                                <div class="calendar-weekday">Tue</div>
+                                <div class="calendar-weekday">Wed</div>
+                                <div class="calendar-weekday">Thu</div>
+                                <div class="calendar-weekday">Fri</div>
+                                <div class="calendar-weekday">Sat</div>
+                                
+                                <div id="calendarDays" class="calendar-grid" style="grid-column: 1 / -1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="journal-entry-container">
+                            <h3><i class="fas fa-edit"></i> Journal Entry</h3>
+                            <form id="journalForm">
+                                <div class="form-group">
+                                    <label for="selectedDate"><i class="fas fa-calendar"></i> Selected Date</label>
+                                    <input type="text" id="selectedDate" readonly value="June 22, 2025">
+                                    <input type="hidden" id="date" value="2025-06-22">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="journal"><i class="fas fa-book"></i> Write about your day</label>
+                                    <textarea id="journal" placeholder="How was your day? What emotions did you experience?..." required></textarea>
+                                </div>
+
+                                <button type="submit" class="analyze-btn">
+                                    <i class="fas fa-chart-line"></i> Analyze Emotions
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="result-card fade-in">
+                        <h3><i class="fas fa-chart-pie"></i> Emotional Analysis</h3>
+                        
+                        <div class="loading" id="loading">
+                            <div class="spinner"></div>
+                            <p>Analyzing your emotional patterns...</p>
+                        </div>
+
+                        <div id="results" style="display: none;">
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="fas fa-smile"></i> Overall Sentiment
+                                </div>
+                                <div class="result-value" id="sentimentResult"></div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="fas fa-brain"></i> Dominant Emotions
+                                </div>
+                                <div class="result-value" id="dominantEmotions"></div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="fas fa-lightbulb"></i> Key Insights
+                                </div>
+                                <div class="result-value" id="keyInsights"></div>
+                            </div>
+
+                            <div class="sentiment-visualization">
+                                <h4><i class="fas fa-chart-bar"></i> Sentiment Visualization</h4>
+                                <div class="sentiment-scale">
+                                    <div class="sentiment-range" style="background: #dc2626;">Very Negative</div>
+                                    <div class="sentiment-range" style="background: #ea580c;">Negative</div>
+                                    <div class="sentiment-range" style="background: #2563eb;">Neutral</div>
+                                    <div class="sentiment-range" style="background: #16a34a;">Positive</div>
+                                    <div class="sentiment-range" style="background: #0d9488;">Very Positive</div>
+                                </div>
+                                <div class="sentiment-indicator">
+                                    <div class="sentiment-pointer" id="sentimentPointer"></div>
+                                    <div class="sentiment-value-label" id="sentimentValueLabel">Sentiment: Neutral</div>
+                                </div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="result-label">
+                                    <i class="fas fa-music"></i> Music Recommendations
+                                </div>
+                                <div class="music-recommendations" id="musicRecommendations">
+                                    </div>
+                            </div>
+
+                            <div style="display: flex; gap: 15px; margin-top: 30px;">
+                                <button class="btn btn-primary" style="flex: 1;" onclick="saveJournal()">
+                                    <i class="fas fa-save"></i> Save Entry
+                                </button>
+                                <button class="btn btn-outline" style="flex: 1;" onclick="showSection('statisticsSection')">
+                                    <i class="fas fa-chart-line"></i> View Statistics
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="noResults">
+                            <div style="text-align: center; color: #9ca3af; padding: 40px;">
+                                <div style="font-size: 3em; margin-bottom: 15px;"><i class="fas fa-book"></i></div>
+                                <p>Write a journal entry to analyze your emotional patterns</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="statistics-section" id="statisticsSection">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Your Emotional Statistics</h2>
+                    <p class="section-subtitle">Track your emotional journey over time</p>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="emotionChart"></canvas>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stats-card fade-in">
+                        <h3><i class="fas fa-smile"></i> Most Common Emotion</h3>
+                        <div class="stats-value" id="commonEmotion">Neutral</div>
+                        <p class="stats-label">Appeared in 45% of your entries</p>
+                    </div>
+                    
+                    <div class="stats-card fade-in" style="animation-delay: 0.2s;">
+                        <h3><i class="fas fa-chart-line"></i> Emotional Stability</h3>
+                        <div class="stats-value" id="stabilityScore">78%</div>
+                        <p class="stats-label">Your emotions have been relatively stable</p>
+                    </div>
+                    
+                    <div class="stats-card fade-in" style="animation-delay: 0.4s;">
+                        <h3><i class="fas fa-calendar"></i> Journaling Streak</h3>
+                        <div class="stats-value" id="streakCount">12 days</div>
+                        <p class="stats-label">Keep up the good work!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="history-section" id="historySection">
+            <div class="section-container">
+                <div class="history-header">
+                    <div>
+                        <h2 class="section-title">Journal History</h2>
+                        <p class="section-subtitle">Review your emotional journey over time</p>
+                    </div>
+                    <div class="history-filters">
+                        <button class="filter-btn active">All</button>
+                        <button class="filter-btn">Last Month</button>
+                        <button class="filter-btn">Last 6 Months</button>
+                    </div>
+                </div>
+                
+                <div class="history-grid" id="historyGrid">
+                    </div>
+            </div>
+        </section>
+
+        <section class="vision-section" id="visionSection">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Our Vision & Mission</h2>
+                    <p class="section-subtitle">Creating a world where emotional well-being is accessible to all</p>
+                </div>
+                
+                <div class="vision-grid">
+                    <div class="vision-card fade-in">
+                        <div class="vision-number">01</div>
+                        <h3>Our Vision</h3>
+                        <p>To create a world where emotional well-being is prioritized, understood, and accessible to everyone through innovative technology.</p>
+                        <i class="fas fa-rocket vision-icon"></i>
+                    </div>
+                    
+                    <div class="vision-card fade-in" style="animation-delay: 0.2s;">
+                        <div class="vision-number">02</div>
+                        <h3>Our Mission</h3>
+                        <p>To empower individuals with insights into their emotional patterns and provide personalized tools for achieving emotional balance.</p>
+                        <i class="fas fa-bullseye vision-icon"></i>
+                    </div>
+                    
+                    <div class="vision-card fade-in" style="animation-delay: 0.4s;">
+                        <div class="vision-number">03</div>
+                        <h3>Our Values</h3>
+                        <p>Empathy, innovation, privacy, and accessibility guide every aspect of our platform and services.</p>
+                        <i class="fas fa-hand-holding-heart vision-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-col">
+                    <h3>Aequilibria</h3>
+                    <p style="color: #cbd5e1; line-height: 1.7; margin-top: 20px;">
+                        A sentiment analysis platform for identifying emotional imbalance in daily reflections and promoting mental well-being.
+                    </p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Menu</h3>
+                    <ul>
+                        <li><a href="#heroSection"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#journalSection"><i class="fas fa-chevron-right"></i> Journal</a></li>
+                        <li><a href="#statisticsSection"><i class="fas fa-chevron-right"></i> Statistics</a></li>
+                        <li><a href="#historySection"><i class="fas fa-chevron-right"></i> History</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Mental Health Guide</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Meditation Techniques</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Coping Strategies</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Professional Help</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> San Francisco, CA</a></li>
+                        <li><a href="tel:+11234567890"><i class="fas fa-phone"></i> +1 (123) 456-7890</a></li>
+                        <li><a href="mailto:support@aequilibria.com"><i class="fas fa-envelope"></i> support@aequilibria.com</a></li>
+                        <li><a href="#"><i class="fas fa-clock"></i> Mon-Fri: 9:00 AM - 6:00 PM</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Aequilibria. All Rights Reserved.
+            </div>
+        </footer>
+    </main>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeModal('login')">&times;</span>
+                <h2><i class="fas fa-lock"></i> Login to Your Account</h2>
+                <p>Access your emotional journal and insights</p>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="loginEmail" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword"><i class="fas fa-key"></i> Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 15px;">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <p style="text-align: center; color: #6b7280;">
+                        Don't have an account? 
+                        <a href="#" onclick="switchModal('login', 'register')" style="color: #5e72e4; text-decoration: none;">Register here</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeModal('register')">&times;</span>
+                <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+                <p>Start your journey to emotional balance</p>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerName"><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="registerName" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="registerEmail" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword"><i class="fas fa-key"></i> Password</label>
+                        <input type="password" id="registerPassword" placeholder="At least 6 characters" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 15px;">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                    <p style="text-align: center; color: #6b7280;">
+                        Already have an account? 
+                        <a href="#" onclick="switchModal('register', 'login')" style="color: #5e72e4; text-decoration: none;">Login here</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
