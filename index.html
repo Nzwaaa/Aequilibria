@@ -10,12 +10,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header class="header">
-        <div class="nav-container">
-            <a href="#" class="logo">
-                <i class="fas fa-brain logo-icon"></i>
-                <span>Aequilibria</span>
-            </a>
+   <header class="header">
+    <div class="nav-container">
+        <a href="#" class="logo">
+            <img src="image/logoo.png" alt="Aequilibria Logo" class="logo-icon">
+            <span>Aequilibria</span>
+        </a>
+
+
+
             <nav>
                 <ul class="nav-menu">
                     <li><a href="#heroSection">Home</a></li>
@@ -49,8 +52,8 @@
     <main class="main-content">
         <section class="hero" id="heroSection">
             <div class="hero-container">
-                <h1>Aequilibria: Find Your Emotional Balance</h1>
-                <p>Track your emotional journey and gain insights through journaling</p>
+                <h1>Aequilibria: Your Path to Emotional Harmony</h1>
+                <p>Track your emotional journey and gain insights through reflective journaling</p>
                 
                 <div class="hero-buttons">
                     <button class="btn btn-primary" style="font-size: 18px; padding: 16px 35px;" onclick="showSection('journalSection')">
@@ -75,7 +78,45 @@
                     <div class="feature-card slide-in" style="animation-delay: 0.4s;">
                         <div class="feature-icon"><i class="fas fa-music"></i></div>
                         <h3>Personalized Recommendations</h3>
-                        <p>Music and activities tailored to your emotional state</p>
+                        <p>Activities and resources tailored to your emotional state</p>
+                    </div>
+                </div>
+                
+                <div class="psychologists-section">
+                    <h2>Professional Support</h2>
+                    <div class="psychologists-container">
+                        <div class="psychologist-card">
+                            <img src="image/psikolog1.jpg" 
+                                 alt="Syifa Rasyida Adriani, M.Psi., Psikolog" 
+                                 class="psychologist-photo">
+                            <div class="psychologist-name">Syifa Rasyida Adriani, M.Psi., Psikolog</div>
+                            <div class="psychologist-title">Clinical Psychologist</div>
+                        </div>
+                        
+                        <div class="psychologist-card">
+                            <img src="image/psikolog2.jpg" 
+                                 alt="Dr. Michael Johnson" 
+                                 class="psychologist-photo">
+                            <div class="psychologist-name">Astri Dwidiyanti, M.Psi., Psikolog</div>
+                            <div class="psychologist-title">Clinical Psychologist</div>
+                            
+                        </div>
+                        
+                        <div class="psychologist-card">
+                            <img src="image/psikolog3.jpg" 
+                                 alt="Dr. Sarah Lewis" 
+                                 class="psychologist-photo">
+                            <div class="psychologist-name">Yesica Grahita Rumanti Mahambara, M.Psi., Psikolog</div>
+                            <div class="psychologist-title">Clinical Psychologist</div>
+                        </div>
+                        
+                        <div class="psychologist-card">
+                            <img src="image/psikolog4.jpg" 
+                                 alt="Dr. Robert Chen" 
+                                 class="psychologist-photo">
+                            <div class="psychologist-name">Siti Maryam Wahyuni, M.Psi.,</div>
+                            <div class="psychologist-title">Clinical Psychologist</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -130,6 +171,11 @@
                                 <button type="submit" class="analyze-btn">
                                     <i class="fas fa-chart-line"></i> Analyze Emotions
                                 </button>
+                                
+                                <div class="ai-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <p>This AI analysis is for informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment.</p>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -150,42 +196,44 @@
                                 <div class="result-value" id="sentimentResult"></div>
                             </div>
 
-                          <div class="result-item">
-    <h4><i class="fas fa-brain"></i> Classification Result</h4>
-    <p id="classificationResult" class="result-value"></p> </div>
-<div class="result-item">
-    <h4><i class="fas fa-lightbulb"></i> Key Insights</h4>
-    <p id="keyInsights" class="result-value"></p>
-</div>
-
                             <div class="result-item">
-                                <div class="result-label">
-                                    <i class="fas fa-lightbulb"></i> Key Insights
-                                </div>
-                                <div class="result-value" id="keyInsights"></div>
+                                <h4><i class="fas fa-brain"></i> Classification Result</h4>
+                                <p id="classificationResult" class="result-value"></p>
+                            </div>
+                            
+                            <div class="result-item">
+                                <h4><i class="fas fa-lightbulb"></i> Key Insights</h4>
+                                <p id="keyInsights" class="result-value"></p>
                             </div>
 
                             <div class="sentiment-visualization">
-                                <h4><i class="fas fa-chart-bar"></i> Sentiment Visualization</h4>
+                                <h4><i class="fas fa-chart-bar"></i> Emotion Scale</h4>
                                 <div class="sentiment-scale">
-                                    <div class="sentiment-range" style="background: #dc2626;">Very Negative</div>
-                                    <div class="sentiment-range" style="background: #ea580c;">Negative</div>
-                                    <div class="sentiment-range" style="background: #2563eb;">Neutral</div>
-                                    <div class="sentiment-range" style="background: #16a34a;">Positive</div>
-                                    <div class="sentiment-range" style="background: #0d9488;">Very Positive</div>
+                                    <div class="sentiment-range">Suicidal</div>
+                                    <div class="sentiment-range">Depression</div>
+                                    <div class="sentiment-range">Anxiety</div>
+                                    <div class="sentiment-range">Stress</div>
+                                    <div class="sentiment-range">Bipolar</div>
+                                    <div class="sentiment-range">Personality</div>
                                 </div>
                                 <div class="sentiment-indicator">
                                     <div class="sentiment-pointer" id="sentimentPointer"></div>
-                                    <div class="sentiment-value-label" id="sentimentValueLabel">Sentiment: Neutral</div>
+                                    <div class="sentiment-value-label" id="sentimentValueLabel">Emotion: Neutral</div>
                                 </div>
                             </div>
 
                             <div class="result-item">
-                                <div class="result-label">
-                                    <i class="fas fa-music"></i> Music Recommendations
+                                <h4><i class="fas fa-lightbulb"></i> Activity Recommendations</h4>
+                                <div class="activity-recommendations" id="activityRecommendations">
+                                    <!-- Activity cards will be inserted here -->
                                 </div>
+                            </div>
+
+                            <div class="result-item">
+                                <h4><i class="fas fa-music"></i> Music Recommendations</h4>
                                 <div class="music-recommendations" id="musicRecommendations">
-                                    </div>
+                                    <!-- Music cards will be inserted here -->
+                                </div>
                             </div>
 
                             <div style="display: flex; gap: 15px; margin-top: 30px;">
@@ -224,19 +272,19 @@
                     <div class="stats-card fade-in">
                         <h3><i class="fas fa-smile"></i> Most Common Emotion</h3>
                         <div class="stats-value" id="commonEmotion">Neutral</div>
-                        <p class="stats-label">Appeared in 45% of your entries</p>
+                        <p class="stats-label" id="commonEmotionLabel">Appeared in 45% of your entries</p>
                     </div>
                     
                     <div class="stats-card fade-in" style="animation-delay: 0.2s;">
                         <h3><i class="fas fa-chart-line"></i> Emotional Stability</h3>
                         <div class="stats-value" id="stabilityScore">78%</div>
-                        <p class="stats-label">Your emotions have been relatively stable</p>
+                        <p class="stats-label" id="stabilityLabel">Your emotions have been relatively stable</p>
                     </div>
                     
                     <div class="stats-card fade-in" style="animation-delay: 0.4s;">
                         <h3><i class="fas fa-calendar"></i> Journaling Streak</h3>
                         <div class="stats-value" id="streakCount">12 days</div>
-                        <p class="stats-label">Keep up the good work!</p>
+                        <p class="stats-label" id="streakLabel">Keep up the good work!</p>
                     </div>
                 </div>
             </div>
@@ -257,37 +305,72 @@
                 </div>
                 
                 <div class="history-grid" id="historyGrid">
-                    </div>
+                    <!-- Journal entries will be inserted here -->
+                </div>
             </div>
         </section>
 
-        <section class="vision-section" id="visionSection">
-            <div class="section-container">
-                <div class="section-header">
-                    <h2 class="section-title">Our Vision & Mission</h2>
-                    <p class="section-subtitle">Creating a world where emotional well-being is accessible to all</p>
-                </div>
-                
-                <div class="vision-grid">
-                    <div class="vision-card fade-in">
-                        <div class="vision-number">01</div>
-                        <h3>Our Vision</h3>
-                        <p>To create a world where emotional well-being is prioritized, understood, and accessible to everyone through innovative technology.</p>
-                        <i class="fas fa-rocket vision-icon"></i>
-                    </div>
-                    
-                    <div class="vision-card fade-in" style="animation-delay: 0.2s;">
-                        <div class="vision-number">02</div>
-                        <h3>Our Mission</h3>
-                        <p>To empower individuals with insights into their emotional patterns and provide personalized tools for achieving emotional balance.</p>
-                        <i class="fas fa-bullseye vision-icon"></i>
-                    </div>
-                    
-                    <div class="vision-card fade-in" style="animation-delay: 0.4s;">
-                        <div class="vision-number">03</div>
-                        <h3>Our Values</h3>
-                        <p>Empathy, innovation, privacy, and accessibility guide every aspect of our platform and services.</p>
-                        <i class="fas fa-hand-holding-heart vision-icon"></i>
+        <div class="media-partner">
+            <div class="partner-logo">
+                <i class="fas fa-hands-helping"></i>
+            </div>
+            <div class="partner-name">Teras Mental Health Center</div>
+            <div class="partner-desc">Our trusted partner providing mental health resources and support since 2019</div>
+            <a href="https://terasmentalhealth.org" target="_blank" rel="noopener" class="partner-link">
+                Visit Partner Website <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+                <div class="vision-mission-section">
+                    <div class="vm-container">
+                        <div class="vm-header">
+                            <p>Driving emotional wellness through technology and compassion</p>
+                        </div>
+                        
+                        <div class="vm-content">
+                            <div class="vm-card vision-card">
+                                <i class="fas fa-eye vm-icon"></i>
+                                <h3>Our Vision</h3>
+                                <p>To create a world where emotional wellness is accessible to everyone, 
+                                breaking down barriers to mental health support through innovative technology 
+                                and compassionate care. We envision a future where people can achieve emotional 
+                                balance and live fulfilling lives.</p>
+                            </div>
+                            
+                            <div class="vm-card mission-card">
+                                <i class="fas fa-bullseye vm-icon"></i>
+                                <h3>Our Mission</h3>
+                                <p>To empower individuals on their emotional wellness journey by providing 
+                                accessible tools for self-reflection, personalized insights, and connections 
+                                to professional support. We combine cutting-edge technology with psychological 
+                                expertise to help people understand and navigate their emotions.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="vm-values">
+                            <div class="value-item">
+                                <i class="fas fa-heart"></i>
+                                <h4>Compassion</h4>
+                                <p>We approach mental health with empathy, understanding, and kindness.</p>
+                            </div>
+                            
+                            <div class="value-item">
+                                <i class="fas fa-lightbulb"></i>
+                                <h4>Innovation</h4>
+                                <p>We continuously seek new ways to improve emotional wellness through technology.</p>
+                            </div>
+                            
+                            <div class="value-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <h4>Privacy</h4>
+                                <p>We protect user data with the highest security standards and ethical practices.</p>
+                            </div>
+                            
+                            <div class="value-item">
+                                <i class="fas fa-handshake"></i>
+                                <h4>Accessibility</h4>
+                                <p>We make emotional wellness tools available to everyone, regardless of background.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -298,7 +381,7 @@
                 <div class="footer-col">
                     <h3>Aequilibria</h3>
                     <p style="color: #cbd5e1; line-height: 1.7; margin-top: 20px;">
-                        A sentiment analysis platform for identifying emotional imbalance in daily reflections and promoting mental well-being.
+                        A sentiment analysis platform for identifying emotional patterns in daily reflections and promoting mental well-being.
                     </p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -331,10 +414,7 @@
                 <div class="footer-col">
                     <h3>Contact Us</h3>
                     <ul>
-                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> San Francisco, CA</a></li>
-                        <li><a href="tel:+11234567890"><i class="fas fa-phone"></i> +1 (123) 456-7890</a></li>
                         <li><a href="mailto:support@aequilibria.com"><i class="fas fa-envelope"></i> support@aequilibria.com</a></li>
-                        <li><a href="#"><i class="fas fa-clock"></i> Mon-Fri: 9:00 AM - 6:00 PM</a></li>
                     </ul>
                 </div>
             </div>
@@ -395,6 +475,16 @@
                         <label for="registerPassword"><i class="fas fa-key"></i> Password</label>
                         <input type="password" id="registerPassword" placeholder="At least 6 characters" required>
                     </div>
+                    
+                    <div class="agreement">
+                        <div class="agreement-content">
+                            <input type="checkbox" id="agreement" required>
+                            <label for="agreement">
+                                I understand that the emotional analysis provided by Aequilibria is based on AI predictions and is for informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. For serious concerns, please contact our <a href="#" onclick="document.querySelector('.media-partner').scrollIntoView({behavior: 'smooth'})">partner organization</a> or a qualified mental health professional.
+                            </label>
+                        </div>
+                    </div>
+                    
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 15px;">
                         <i class="fas fa-user-plus"></i> Create Account
                     </button>
@@ -406,7 +496,6 @@
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
