@@ -5,8 +5,25 @@ let currentJournal = null;
 let journalHistory = [];
 let currentMonth = new Date().getMonth(); // Current month (0-indexed)
 let currentYear = new Date().getFullYear();
-const emotionLabels = ["Anxiety", "Depression", "Stress", "Neutral", "Happiness", "Excitement"];
 let emotionChartInstance; // To hold the Chart.js instance
+
+// --- Peta Konversi Hasil API ---
+// Peta ini menerjemahkan hasil klasifikasi API ke skor numerik dan label.
+const predictionMap = {
+    // Kategori Sangat Negatif
+    'Suicidal':             { score: -1.0, label: "Very Negative" },
+    'Depression':           { score: -0.8, label: "Very Negative" },
+    
+    // Kategori Negatif
+    'Bipolar':              { score: -0.7, label: "Negative" },
+    'Personality disorder': { score: -0.6, label: "Negative" },
+    'Anxiety':              { score: -0.5, label: "Negative" },
+    'Stress':               { score: -0.4, label: "Negative" },
+    
+    // Kategori Netral / Normal
+    'Normal':               { score: 0.2,  label: "Neutral" } 
+};
+
 
 // DOM Elements
 const authButtons = document.getElementById('authButtons');
@@ -19,7 +36,7 @@ const resultsDiv = document.getElementById('results');
 const noResultsDiv = document.getElementById('noResults');
 const loadingDiv = document.getElementById('loading');
 const sentimentResultDiv = document.getElementById('sentimentResult');
-const dominantEmotionsDiv = document.getElementById('dominantEmotions');
+const classificationResult = document.getElementById('classificationResult');
 const keyInsightsDiv = document.getElementById('keyInsights');
 const historyGrid = document.getElementById('historyGrid');
 const sentimentPointer = document.getElementById('sentimentPointer');
@@ -62,6 +79,9 @@ function initUI() {
     updateAuthUI();
     noResultsDiv.style.display = 'block';
     resultsDiv.style.display = 'none';
+     prevMonthBtn.style.display = 'none';
+    nextMonthBtn.style.display = 'none';
+
     loadJournalHistory();
     renderCalendar(currentYear, currentMonth);
     // Set today as default selected date on load
@@ -117,7 +137,7 @@ function showSection(sectionId) {
 // --- Authentication Modals ---
 
 function openModal(type) {
-    document.getElementById(`${type}Modal`).style.display = 'flex'; // Use flex to center
+    document.getElementById(`${type}Modal`).style.display = 'flex';
 }
 
 function closeModal(type) {
@@ -145,13 +165,12 @@ function logout() {
     currentUser = null;
     updateAuthUI();
     alert('You have been logged out!');
-    showSection('heroSection'); // Go back to home after logout
+    showSection('heroSection');
 }
 
 // --- Event Listeners ---
 
 function setupEventListeners() {
-    // Nav menu links
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -160,12 +179,11 @@ function setupEventListeners() {
         });
     });
 
-    // Simulate login
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
         isLoggedIn = true;
         currentUser = {
-            name: 'Sarah', // In a real app, this would come from backend
+            name: 'Sarah',
             email: document.getElementById('loginEmail').value
         };
         updateAuthUI();
@@ -173,7 +191,6 @@ function setupEventListeners() {
         alert('Login successful!');
     });
 
-    // Simulate registration
     document.getElementById('registerForm').addEventListener('submit', function(e) {
         e.preventDefault();
         isLoggedIn = true;
@@ -186,19 +203,12 @@ function setupEventListeners() {
         alert('Account created successfully!');
     });
 
-    // Journal form submission
+    // Journal form submission with actual API call
     document.getElementById('journalForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        loadingDiv.style.display = 'block';
-        noResultsDiv.style.display = 'none';
-        resultsDiv.style.display = 'none';
-        
-        // Simulate API call
-        setTimeout(analyzeJournal, 1500);
+        analyzeJournal();
     });
 
-    // Calendar navigation
     prevMonthBtn.addEventListener('click', () => {
         currentMonth--;
         if (currentMonth < 0) {
@@ -227,19 +237,17 @@ function renderCalendar(year, month) {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
-    calendarDays.innerHTML = ''; // Clear existing days
+    calendarDays.innerHTML = '';
     
-    // Add empty cells for days before the first day of the month
+    // Tambahkan baris ini untuk mendapatkan tanggal hari ini tanpa informasi waktu
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
-        emptyCell.className = 'calendar-day empty'; // Added 'empty' class
+        emptyCell.className = 'calendar-day empty';
         calendarDays.appendChild(emptyCell);
     }
-    
-    const today = new Date();
-    const currentDay = today.getDate();
-    const currentMonthActual = today.getMonth();
-    const currentYearActual = today.getFullYear();
     
     for (let day = 1; day <= daysInMonth; day++) {
         const dayCell = document.createElement('div');
@@ -247,137 +255,121 @@ function renderCalendar(year, month) {
         dayCell.textContent = day;
         
         const fullDate = new Date(year, month, day);
+        fullDate.setHours(0, 0, 0, 0); // Set waktu ke 0 untuk perbandingan yang akurat
         const isoDate = fullDate.toISOString().split('T')[0];
 
-        // Check if this day has an entry
         const hasEntry = journalHistory.some(entry => entry.date === isoDate);
         if (hasEntry) {
             dayCell.classList.add('has-entry');
         }
         
-        // Highlight today
-        if (day === currentDay && month === currentMonthActual && year === currentYearActual) {
+        // --- INI ADALAH LOGIKA UTAMA YANG DIUBAH ---
+        // Periksa apakah tanggal di sel BUKAN hari ini
+        if (fullDate.getTime() !== today.getTime()) {
+            dayCell.classList.add('disabled'); // Tambahkan class 'disabled'
+        } else {
+            // Jika HARI INI, buat terpilih dan bisa diklik
             dayCell.classList.add('selected');
-            // If today is the default, set it in the input fields
-            if (!dateInput.value) { // Only set if not already set by history
+            if (!dateInput.value) {
                 setSelectedDate(fullDate);
             }
-        }
-        
-        dayCell.addEventListener('click', () => {
-            // Remove selected from all days
-            document.querySelectorAll('.calendar-day').forEach(el => {
-                el.classList.remove('selected');
+            
+            dayCell.addEventListener('click', () => {
+                // Fungsi klik sekarang hanya untuk memastikan tampilan tetap konsisten
+                // karena pengguna tidak bisa memilih tanggal lain.
+                setSelectedDate(fullDate);
+                
+                const existingEntry = journalHistory.find(entry => entry.date === isoDate);
+                if (existingEntry) {
+                    document.getElementById('journal').value = existingEntry.journal;
+                    displayAnalysis(existingEntry);
+                } else {
+                    document.getElementById('journal').value = '';
+                    noResultsDiv.style.display = 'block';
+                    resultsDiv.style.display = 'none';
+                }
             });
-            
-            // Add selected to clicked day
-            dayCell.classList.add('selected');
-            
-            // Update date display and hidden input
-            setSelectedDate(fullDate);
-            
-            // Load journal if exists
-            const existingEntry = journalHistory.find(entry => entry.date === isoDate);
-            if (existingEntry) {
-                document.getElementById('journal').value = existingEntry.journal;
-                displayAnalysis(existingEntry);
-            } else {
-                document.getElementById('journal').value = '';
-                noResultsDiv.style.display = 'block';
-                resultsDiv.style.display = 'none';
-            }
-        });
+        }
+      
         
         calendarDays.appendChild(dayCell);
     }
 }
-
 function setSelectedDate(dateObject) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     selectedDateEl.value = dateObject.toLocaleDateString('en-US', options);
     dateInput.value = dateObject.toISOString().split('T')[0];
 }
 
-// --- Journal Analysis and Display ---
+// --- Journal Analysis and Display (with API) ---
 
-function analyzeJournal() {
-    const date = dateInput.value;
+async function analyzeJournal() {
     const journal = document.getElementById('journal').value;
-    
-    // Basic validation
+    const date = dateInput.value;
+
     if (!journal.trim()) {
         alert('Please write something in your journal entry before analyzing.');
-        loadingDiv.style.display = 'none';
-        noResultsDiv.style.display = 'block';
         return;
     }
 
-    // Simulate sentiment analysis
-    const sentimentScore = Math.random() * 2 - 1; // Between -1 and 1
-    
-    // Determine sentiment label and class
-    let sentimentLabel = "";
-    let sentimentClass = "";
-    if (sentimentScore <= -0.75) {
-        sentimentLabel = "Very Negative";
-        sentimentClass = "very-negative";
-    } else if (sentimentScore <= -0.25) {
-        sentimentLabel = "Negative";
-        sentimentClass = "negative";
-    } else if (sentimentScore <= 0.25) {
-        sentimentLabel = "Neutral";
-        sentimentClass = "neutral";
-    } else if (sentimentScore <= 0.75) {
-        sentimentLabel = "Positive";
-        sentimentClass = "positive";
-    } else {
-        sentimentLabel = "Very Positive";
-        sentimentClass = "very-positive";
+    loadingDiv.style.display = 'block';
+    noResultsDiv.style.display = 'none';
+    resultsDiv.style.display = 'none';
+
+    try {
+        const apiUrl = 'https://aequilibria-production.up.railway.app/predict';
+        const requestData = { text: journal };
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        const prediction = data.prediction;
+
+        const sentimentInfo = predictionMap[prediction] || { score: 0, label: "Neutral" };
+        const sentimentScore = sentimentInfo.score;
+        const sentimentLabel = sentimentInfo.label;
+
+        const insights = [
+            "Your entry shows a need for more self-compassion and acceptance.",
+            "You're focusing on challenges but also showing resilience.",
+            "There's a strong theme of gratitude in your reflections."
+        ];
+        const randomInsight = insights[Math.floor(Math.random() * insights.length)];
+
+        currentJournal = {
+            date: date,
+            sentiment: sentimentScore,
+            journal: journal,
+            classification: prediction,
+            keyInsight: randomInsight,
+            sentimentLabel: sentimentLabel
+        };
+
+        displayAnalysis(currentJournal);
+
+    } catch (error) {
+        console.error('Error analyzing journal:', error);
+        alert('Sorry, there was an error analyzing your journal. Please try again later.');
+        noResultsDiv.style.display = 'block';
+    } finally {
+        loadingDiv.style.display = 'none';
     }
-    
-    // Generate dominant emotions (randomly for demonstration)
-    const emotionsPool = ["Joy", "Sadness", "Anger", "Fear", "Surprise", "Disgust", "Neutral", "Love", "Calmness", "Excitement", "Anxiety", "Stress"];
-    const dominant = [];
-    const numDominant = Math.floor(Math.random() * 2) + 2; // 2-3 emotions
-    
-    // Ensure unique dominant emotions
-    const shuffledEmotions = [...emotionsPool].sort(() => 0.5 - Math.random());
-    for (let i = 0; i < numDominant; i++) {
-        dominant.push(shuffledEmotions[i]);
-    }
-    
-    // Generate key insights (randomly for demonstration)
-    const insights = [
-        "Your entry shows a need for more self-compassion and acceptance.",
-        "You're focusing on challenges but also showing resilience.",
-        "There's a strong theme of gratitude in your reflections.",
-        "You might benefit from setting clearer boundaries.",
-        "Your writing indicates a search for meaning and purpose.",
-        "Consider exploring activities that bring you joy regularly.",
-        "You seem to be handling stress well, but remember to take breaks.",
-        "Reflecting on positive moments can enhance your overall mood."
-    ];
-    
-    const randomInsight = insights[Math.floor(Math.random() * insights.length)];
-    
-    // Create current journal object
-    currentJournal = {
-        date: date,
-        sentiment: sentimentScore,
-        journal: journal,
-        dominantEmotions: dominant,
-        keyInsight: randomInsight,
-        sentimentLabel: sentimentLabel // Store the label for easier display
-    };
-    
-    displayAnalysis(currentJournal);
 }
 
 function displayAnalysis(entry) {
-    // Set sentiment result
-    sentimentResultDiv.innerHTML = `Sentiment: <span class="sentiment-indicator ${entry.sentimentLabel.toLowerCase().replace(' ', '-')}" style="background-color: ${getSentimentColor(entry.sentiment)}; color: white;">${entry.sentimentLabel}</span>`;
+    sentimentResultDiv.innerHTML = `Sentiment: <span class="sentiment-indicator" style="background-color: ${getSentimentColor(entry.sentiment)}; color: white;">${entry.sentimentLabel}</span>`;
     
-    dominantEmotionsDiv.textContent = entry.dominantEmotions.join(", ");
+    const classificationColor = getSentimentColor(entry.sentiment);
+    classificationResult.innerHTML = `<span class="sentiment-indicator" style="background-color: ${classificationColor}; color: white; padding: 5px 12px; border-radius: 15px;">${entry.classification}</span>`;
+
     keyInsightsDiv.textContent = entry.keyInsight;
     
     generateMusicRecommendations(entry.sentiment);
@@ -387,7 +379,6 @@ function displayAnalysis(entry) {
     resultsDiv.style.display = 'block';
     noResultsDiv.style.display = 'none';
     
-    // Animate results
     const resultItems = document.querySelectorAll('#results .result-item, #results .sentiment-visualization, #results .btn-primary, #results .btn-outline');
     resultItems.forEach((item, index) => {
         item.style.opacity = 0;
@@ -410,36 +401,27 @@ function getSentimentColor(sentiment) {
 
 function generateMusicRecommendations(sentiment) {
     musicRecommendationsDiv.innerHTML = '';
-    
     let musicData = [];
     
     if (sentiment < -0.5) {
-        // Very negative sentiment
         musicData = [
             { title: "Calm Meditation", artist: "Peaceful Minds", icon: "fas fa-spa", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-            { title: "Healing Piano", artist: "Serenity Sounds", icon: "fas fa-music", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-            { title: "Nature Sounds", artist: "Forest Whisper", icon: "fas fa-tree", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+            { title: "Healing Piano", artist: "Serenity Sounds", icon: "fas fa-music", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" }
         ];
     } else if (sentiment < 0) {
-        // Negative sentiment
         musicData = [
             { title: "Uplifting Melodies", artist: "Hope Ensemble", icon: "fas fa-sun", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
-            { title: "Gentle Guitar", artist: "Acoustic Harmony", icon: "fas fa-guitar", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
-            { title: "Soothing Strings", artist: "String Serenity", icon: "fas fa-violin", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" }
+            { title: "Gentle Guitar", artist: "Acoustic Harmony", icon: "fas fa-guitar", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" }
         ];
     } else if (sentiment < 0.5) {
-        // Neutral sentiment
         musicData = [
             { title: "Focus Flow", artist: "Concentration Crew", icon: "fas fa-brain", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
-            { title: "Ambient Atmosphere", artist: "Atmospheric Sounds", icon: "fas fa-cloud", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
-            { title: "Chill Beats", artist: "Relaxation Radio", icon: "fas fa-wind", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3" }
+            { title: "Ambient Atmosphere", artist: "Atmospheric Sounds", icon: "fas fa-cloud", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
         ];
     } else {
-        // Positive sentiment
         musicData = [
             { title: "Happy Tunes", artist: "Joy Collective", icon: "fas fa-smile", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3" },
-            { title: "Upbeat Energy", artist: "Vibrant Vibes", icon: "fas fa-bolt", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3" },
-            { title: "Celebration Mix", artist: "Party Playlist", icon: "fas fa-glass-cheers", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3" }
+            { title: "Upbeat Energy", artist: "Vibrant Vibes", icon: "fas fa-bolt", audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3" }
         ];
     }
     
@@ -449,31 +431,23 @@ function generateMusicRecommendations(sentiment) {
         const audioId = `audio-${Math.random().toString(36).substr(2, 9)}`;
         
         musicCard.innerHTML = `
-            <div class="music-image">
-                <i class="${music.icon}"></i>
-            </div>
+            <div class="music-image"><i class="${music.icon}"></i></div>
             <div class="music-content">
                 <div class="music-title">${music.title}</div>
                 <div class="music-artist">${music.artist}</div>
-                <button class="play-btn" onclick="playAudio('${audioId}', this)">
-                    <i class="fas fa-play"></i> Play
-                </button>
+                <button class="play-btn" onclick="playAudio('${audioId}', this)"><i class="fas fa-play"></i> Play</button>
                 <audio id="${audioId}" src="${music.audio}"></audio>
-            </div>
-        `;
-        
+            </div>`;
         musicRecommendationsDiv.appendChild(musicCard);
     });
 }
 
 function playAudio(id, button) {
     const audio = document.getElementById(id);
-    
-    // Pause all other audios
     document.querySelectorAll('audio').forEach(otherAudio => {
         if (otherAudio !== audio && !otherAudio.paused) {
             otherAudio.pause();
-            otherAudio.previousElementSibling.innerHTML = '<i class="fas fa-play"></i> Play';
+            otherAudio.parentElement.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i> Play';
         }
     });
 
@@ -484,19 +458,15 @@ function playAudio(id, button) {
         audio.pause();
         button.innerHTML = '<i class="fas fa-play"></i> Play';
     }
-
-    // Reset button text when audio ends
     audio.onended = () => {
         button.innerHTML = '<i class="fas fa-play"></i> Play';
     };
 }
 
 function updateSentimentVisualization(sentiment) {
-    // Normalize sentiment from -1 to 1 to 0 to 100 for pointer position
-    const normalizedSentiment = (sentiment + 1) / 2; // Converts -1 to 0, 0 to 0.5, 1 to 1
+    const normalizedSentiment = (sentiment + 1) / 2;
     let position = normalizedSentiment * 100;
-    
-    sentimentPointer.style.left = `calc(${position}% - 15px)`; // Adjust for pointer width
+    sentimentPointer.style.left = `calc(${position}% - 15px)`;
     
     let sentimentLabel = "";
     if (sentiment <= -0.75) sentimentLabel = "Very Negative";
@@ -506,7 +476,7 @@ function updateSentimentVisualization(sentiment) {
     else sentimentLabel = "Very Positive";
     
     sentimentValueLabel.textContent = `Sentiment: ${sentimentLabel}`;
-    sentimentValueLabel.style.left = `${position}%`; // Keep label centered with pointer
+    sentimentValueLabel.style.left = `${position}%`;
 }
 
 // --- Journal History Management ---
@@ -517,7 +487,6 @@ function saveJournal() {
         return;
     }
     
-    // Check if an entry for this date already exists and update it
     const existingIndex = journalHistory.findIndex(entry => entry.date === currentJournal.date);
     if (existingIndex !== -1) {
         journalHistory[existingIndex] = currentJournal;
@@ -528,10 +497,10 @@ function saveJournal() {
     }
     
     localStorage.setItem('journalHistory', JSON.stringify(journalHistory));
-    
-    // Re-render calendar and history to reflect changes
     renderCalendar(currentYear, currentMonth);
     renderJournalHistory();
+    calculateStatistics(); // Recalculate stats after saving
+    renderEmotionChart(); // Re-render chart
 }
 
 function loadJournalHistory() {
@@ -539,11 +508,9 @@ function loadJournalHistory() {
     if (savedHistory) {
         journalHistory = JSON.parse(savedHistory);
     }
-    // Ensure journalHistory is always an array
     if (!Array.isArray(journalHistory)) {
         journalHistory = [];
     }
-    // Sort by date (newest first)
     journalHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
     renderJournalHistory();
 }
@@ -560,33 +527,25 @@ function renderJournalHistory() {
                 <button class="btn btn-primary" style="margin-top: 20px;" onclick="showSection('journalSection')">
                     <i class="fas fa-book-open"></i> Start Journaling
                 </button>
-            </div>
-        `;
+            </div>`;
         return;
     }
     
     journalHistory.forEach((entry, index) => {
         const historyCard = document.createElement('div');
         historyCard.className = 'history-card fade-in';
-        historyCard.style.animationDelay = `${index * 0.1}s`; // Staggered animation
+        historyCard.style.animationDelay = `${index * 0.1}s`;
         
         const entryDate = new Date(entry.date);
-        const formattedDate = entryDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        const formattedDate = entryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
         
-        let sentimentStatus = entry.sentimentLabel;
-        let statusColor = getSentimentColor(entry.sentiment); // Use the helper function
+        const sentimentStatus = entry.sentimentLabel;
+        const statusColor = getSentimentColor(entry.sentiment);
         
-        const truncatedJournal = entry.journal.length > 100 ? 
-            entry.journal.substring(0, 100) + '...' : entry.journal;
+        const truncatedJournal = entry.journal.length > 100 ? entry.journal.substring(0, 100) + '...' : entry.journal;
         
         historyCard.innerHTML = `
-            <div class="history-date">
-                <i class="far fa-calendar"></i> ${formattedDate}
-            </div>
+            <div class="history-date"><i class="far fa-calendar"></i> ${formattedDate}</div>
             <h3 class="history-title">Journal Entry</h3>
             <p style="color: var(--gray); margin-bottom: 15px; font-style: italic;">"${truncatedJournal}"</p>
             <div class="history-stats">
@@ -595,19 +554,14 @@ function renderJournalHistory() {
                     <span class="stat-value" style="color: ${statusColor}">${sentimentStatus}</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Emotions</span>
-                    <span class="stat-value">${entry.dominantEmotions.join(', ')}</span>
+                    <span class="stat-label">Classification</span>
+                    <span class="stat-value">${entry.classification}</span>
                 </div>
             </div>
             <div class="history-actions">
-                <button class="action-btn view-btn" onclick="viewJournalDetail('${entry.date}')">
-                    <i class="fas fa-eye"></i> View Details
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteJournal('${entry.date}')">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </div>
-        `;
+                <button class="action-btn view-btn" onclick="viewJournalDetail('${entry.date}')"><i class="fas fa-eye"></i> View Details</button>
+                <button class="action-btn delete-btn" onclick="deleteJournal('${entry.date}')"><i class="fas fa-trash"></i> Delete</button>
+            </div>`;
         
         historyGrid.appendChild(historyCard);
     });
@@ -618,7 +572,9 @@ function deleteJournal(dateToDelete) {
         journalHistory = journalHistory.filter(entry => entry.date !== dateToDelete);
         localStorage.setItem('journalHistory', JSON.stringify(journalHistory));
         renderJournalHistory();
-        renderCalendar(currentYear, currentMonth); // Update calendar dots
+        renderCalendar(currentYear, currentMonth);
+        calculateStatistics(); // Recalculate stats after deleting
+        renderEmotionChart(); // Re-render chart
         alert('Journal entry deleted.');
     }
 }
@@ -629,32 +585,27 @@ function viewJournalDetail(dateToView) {
         alert('Entry not found!');
         return;
     }
-    currentJournal = entry; // Set the current journal for potential saving
+    currentJournal = entry;
     
-    // Set form values
     const entryDate = new Date(entry.date);
-    setSelectedDate(entryDate); // Use helper function
+    setSelectedDate(entryDate);
     document.getElementById('journal').value = entry.journal;
     
-    // Update calendar selection
     document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('selected'));
-    const dayToSelect = new Date(dateToView).getDate();
-    const monthToSelect = new Date(dateToView).getMonth();
-    const yearToSelect = new Date(dateToView).getFullYear();
+    const dayToSelect = entryDate.getDate();
+    const monthToSelect = entryDate.getMonth();
+    const yearToSelect = entryDate.getFullYear();
+    
     if (monthToSelect !== currentMonth || yearToSelect !== currentYear) {
         currentMonth = monthToSelect;
         currentYear = yearToSelect;
         renderCalendar(currentYear, currentMonth);
     }
-    // Find and select the day after rendering (or re-rendering) the calendar
+    
     const dayCells = calendarDays.querySelectorAll('.calendar-day');
     Array.from(dayCells).find(cell => parseInt(cell.textContent) === dayToSelect && !cell.classList.contains('empty'))?.classList.add('selected');
 
-
-    // Display analysis results
     displayAnalysis(entry);
-    
-    // Show journal section
     showSection('journalSection');
 }
 
@@ -662,13 +613,12 @@ function viewJournalDetail(dateToView) {
 
 function renderEmotionChart() {
     if (emotionChartInstance) {
-        emotionChartInstance.destroy(); // Destroy previous chart instance
+        emotionChartInstance.destroy();
     }
 
     const ctx = emotionChartCanvas.getContext('2d');
     
-    // Prepare data for chart (last 7 entries)
-    const last7Entries = journalHistory.slice(0, 7).reverse(); // Get most recent 7, and reverse to show chronologically
+    const last7Entries = journalHistory.slice(0, 7).reverse();
     const dates = last7Entries.map(entry => {
         const date = new Date(entry.date);
         return `${date.getDate()}/${date.getMonth()+1}`;
@@ -695,7 +645,7 @@ function renderEmotionChart() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false, // Allow chart to resize dynamically
+            maintainAspectRatio: false,
             scales: {
                 y: {
                     min: -1,
@@ -710,20 +660,14 @@ function renderEmotionChart() {
                             return '';
                         }
                     },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
+                    grid: { color: 'rgba(0, 0, 0, 0.05)' }
                 },
                 x: {
-                    grid: {
-                        display: false
-                    }
+                    grid: { display: false }
                 }
             },
             plugins: {
-                legend: {
-                    display: false
-                },
+                legend: { display: false },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -752,62 +696,64 @@ function calculateStatistics() {
         return;
     }
     
-    // Calculate most common emotion
-    const emotionCount = {};
+    // Calculate most common classification
+    const classificationCount = {};
     journalHistory.forEach(entry => {
-        entry.dominantEmotions.forEach(emotion => {
-            emotionCount[emotion] = (emotionCount[emotion] || 0) + 1;
-        });
+        const classification = entry.classification;
+        if (classification) {
+            classificationCount[classification] = (classificationCount[classification] || 0) + 1;
+        }
     });
     
-    let mostCommonEmotion = '';
+    let mostCommonClassification = 'N/A';
     let maxCount = 0;
-    for (const emotion in emotionCount) {
-        if (emotionCount[emotion] > maxCount) {
-            mostCommonEmotion = emotion;
-            maxCount = emotionCount[emotion];
+    for (const classification in classificationCount) {
+        if (classificationCount[classification] > maxCount) {
+            mostCommonClassification = classification;
+            maxCount = classificationCount[classification];
         }
     }
     
-    const percentage = Math.round((maxCount / journalHistory.length) * 100);
-    commonEmotionEl.textContent = mostCommonEmotion;
+    const totalEntriesWithClassification = Object.values(classificationCount).reduce((sum, count) => sum + count, 0);
+    const percentage = totalEntriesWithClassification > 0 ? Math.round((maxCount / totalEntriesWithClassification) * 100) : 0;
+    commonEmotionEl.textContent = mostCommonClassification;
     document.querySelector('.stats-card:first-child .stats-label').textContent = 
-        `Appeared in ${percentage}% of your entries`;
+        mostCommonClassification !== 'N/A' ? `Appeared in ${percentage}% of your entries` : 'No classifications yet.';
     
     // Calculate stability (variance of sentiment scores)
     const sentiments = journalHistory.map(entry => entry.sentiment);
     const mean = sentiments.reduce((a, b) => a + b, 0) / sentiments.length;
     const variance = sentiments.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / sentiments.length;
     
-    // A simplified stability score (closer to 100% means less variance, more stable)
-    const stabilityScore = Math.max(0, Math.round((1 - (variance / 0.5)) * 100)); // Divide by max possible variance (e.g., 0.5 for -1 to 1 range, if evenly distributed)
+    const stabilityScore = Math.max(0, Math.round((1 - variance) * 100));
     stabilityScoreEl.textContent = `${stabilityScore}%`;
     document.querySelector('.stats-card:nth-child(2) .stats-label').textContent = 
         stabilityScore > 70 ? 'Your emotions have been relatively stable' : 
         stabilityScore > 40 ? 'Your emotions have moderate fluctuations' : 
         'Your emotions have significant fluctuations';
     
-    // Calculate streak (for simplicity, a contiguous sequence of days with entries)
+    // Calculate streak
     let streak = 0;
     if (journalHistory.length > 0) {
-        // Sort history by date ascending for streak calculation
         const sortedHistory = [...journalHistory].sort((a, b) => new Date(a.date) - new Date(b.date));
         
         let currentStreak = 0;
         let lastDate = null;
 
-        for (let i = 0; i < sortedHistory.length; i++) {
-            const entryDate = new Date(sortedHistory[i].date);
+        const uniqueDates = [...new Set(sortedHistory.map(e => e.date))].map(d => new Date(d));
+
+        for (let i = 0; i < uniqueDates.length; i++) {
+            const entryDate = uniqueDates[i];
             if (lastDate === null) {
                 currentStreak = 1;
             } else {
-                const diffTime = Math.abs(entryDate - lastDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const diffTime = entryDate - lastDate;
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
                 
                 if (diffDays === 1) {
                     currentStreak++;
                 } else if (diffDays > 1) {
-                    currentStreak = 1; // Reset streak if there's a gap
+                    currentStreak = 1; 
                 }
             }
             streak = Math.max(streak, currentStreak);

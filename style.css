@@ -435,10 +435,17 @@ body {
     border-radius: 50%;
 }
 
+
+
 .calendar-day.selected {
-    background: var(--primary);
-    color: white;
+    background-color: #2563eb;
+    color: #000000; 
+    font-weight: bold;
+    border-radius: 100%; 
+    position: relative;
+    z-index: 2;
 }
+
 
 .journal-entry-container {
     margin-top: 20px;
