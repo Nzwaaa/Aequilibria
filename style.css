@@ -420,20 +420,8 @@ body {
     background: var(--light-gray);
 }
 
-.calendar-day.has-entry {
-    background: rgba(94, 114, 228, 0.1);
-    position: relative;
-}
 
-.calendar-day.has-entry::after {
-    content: '';
-    position: absolute;
-    bottom: 5px;
-    width: 6px;
-    height: 6px;
-    background: var(--primary);
-    border-radius: 50%;
-}
+
 
 
 
@@ -441,7 +429,6 @@ body {
     background-color: #2563eb;
     color: #000000; 
     font-weight: bold;
-    border-radius: 100%; 
     position: relative;
     z-index: 2;
 }
