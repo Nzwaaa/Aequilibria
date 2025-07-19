@@ -40,107 +40,125 @@
             'Personality disorder': '#64748b'
         };
 
-        // Activity recommendations
-        const activityRecommendations = {
-            'Normal': [
-                {
-                    title: "Morning Stretching",
-                    icon: "fas fa-sun",
-                    desc: "Start your day with gentle stretching to maintain energy and positivity.",
-                    ref: "Journal of Positive Psychology, 2021"
-                },
-                {
-                    title: "Gratitude Journaling",
-                    icon: "fas fa-book",
-                    desc: "Continue journaling daily to maintain your emotional balance.",
-                    ref: "Smith et al., 2020, Journal of Mental Health"
-                }
-            ],
-            'Depression': [
-                {
-                    title: "Light Walking",
-                    icon: "fas fa-walking",
-                    desc: "Try light physical activity like walking to boost mood and energy levels.",
-                    ref: "Smith et al., 2020, Journal of Mental Health"
-                },
-                {
-                    title: "Social Connection",
-                    icon: "fas fa-users",
-                    desc: "Reach out to a friend or loved one for a supportive conversation.",
-                    ref: "Harvard Mental Health Letter, 2022"
-                }
-            ],
-            'Suicidal': [
-                {
-                    title: "Professional Support",
-                    icon: "fas fa-user-md",
-                    desc: "We recommend contacting a mental health professional immediately.",
-                    ref: "WHO, 2019"
-                },
-                {
-                    title: "Breathing Techniques",
-                    icon: "fas fa-wind",
-                    desc: "Practice deep breathing exercises to help manage intense emotions.",
-                    ref: "American Psychological Association, 2020"
-                }
-            ],
-            'Anxiety': [
-                {
-                    title: "Mindfulness Meditation",
-                    icon: "fas fa-spa",
-                    desc: "Practice 10 minutes of mindfulness meditation to calm anxious thoughts.",
-                    ref: "Brown & Gerbarg, 2005, Journal of Alternative Therapies"
-                },
-                {
-                    title: "Nature Walk",
-                    icon: "fas fa-tree",
-                    desc: "Spend time in nature to reduce anxiety and improve mood.",
-                    ref: "Environmental Psychology Journal, 2021"
-                }
-            ],
-            'Stress': [
-                {
-                    title: "Progressive Muscle Relaxation",
-                    icon: "fas fa-hands",
-                    desc: "Practice tensing and relaxing muscle groups to relieve physical stress.",
-                    ref: "Harvard Health, 2021"
-                },
-                {
-                    title: "Guided Imagery",
-                    icon: "fas fa-cloud",
-                    desc: "Use visualization techniques to create a peaceful mental space.",
-                    ref: "Mayo Clinic, 2022"
-                }
-            ],
-            'Bipolar': [
-                {
-                    title: "Sleep Schedule",
-                    icon: "fas fa-bed",
-                    desc: "Maintain a consistent sleep schedule to help regulate mood patterns.",
-                    ref: "American Psychiatric Association, 2020"
-                },
-                {
-                    title: "Mood Tracking",
-                    icon: "fas fa-chart-line",
-                    desc: "Continue journaling consistently to identify patterns and triggers.",
-                    ref: "Journal of Affective Disorders, 2019"
-                }
-            ],
-            'Personality disorder': [
-                {
-                    title: "Therapeutic Journaling",
-                    icon: "fas fa-book-medical",
-                    desc: "Use journaling to explore patterns and emotional triggers.",
-                    ref: "DSM-5, 2013"
-                },
-                {
-                    title: "Regular Counseling",
-                    icon: "fas fa-comments",
-                    desc: "Engage in consistent therapy sessions for long-term support.",
-                    ref: "National Institute of Mental Health, 2022"
-                }
-            ]
-        };
+const activityRecommendations = {
+    'Normal': [
+        {
+            title: "Morning Stretching",
+            icon: "fas fa-sun",
+            desc: "Start your day with gentle stretching to maintain energy and positivity.",
+            ref: "Church, F. C., Mitchell, A. K., & Bliss, R. R. (2024). Exercise, neuroprotective.",
+            url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC11506540/"
+        },
+        {
+            title: "Gratitude Journaling",
+            icon: "fas fa-book",
+            desc: "Continue journaling daily to maintain your emotional balance.",
+            ref: "Wong, Y.J., & Brown, J.W. (2020). The psychological benefits of gratitude: Evidence from a longitudinal study. Journal of Positive Psychology.",
+            url: "https://doi.org/10.1080/17439760.2019.1689414"
+        }
+    ],
+    'Depression': [
+        {
+            title: "Light Walking",
+            icon: "fas fa-walking",
+            desc: "Try light physical activity like walking to boost mood and energy levels.",
+            ref: "Chen, J., et al. (2024). Physical activity and depression in Taiwanese : A prospective study. Journal of Health and Physical Activity.",
+            url: "https://www.sciencedirect.com/science/article/pii/S1755296624000462"
+        },
+        {
+            title: "Social Connection",
+            icon: "fas fa-users",
+            desc: "Reach out to a friend or loved one for a supportive conversation.",
+            ref: "Cacioppo, J.T., & Cacioppo, S. (2018). Loneliness in the modern age. Advances in Experimental Social Psychology.",
+            url: "https://doi.org/10.1016/bs.aesp.2018.03.003"
+        }
+    ],
+    'Suicidal': [
+        {
+            title: "Professional Support",
+            icon: "fas fa-user-md",
+            desc: "We recommend contacting a mental health professional immediately.",
+            ref: "WHO. (2019). Preventing suicide: A global imperative.",
+            url: "https://www.who.int/publications/i/item/9789241564779"
+        },
+        {
+            title: "Breathing Techniques",
+            icon: "fas fa-wind",
+            desc: "Practice deep breathing exercises to help manage intense emotions.",
+            ref: "Ma, X., Yue, Z.-Q., et al. (2017). The effect of diaphragmatic breathing on attention, negative affect and stress in healthy adults. Frontiers in Psychology.",
+            url: "https://www.frontiersin.org/articles/10.3389/fpsyg.2017.00874/full"
+        }
+    ],
+    'Anxiety': [
+        {
+            title: "Mindfulness Meditation",
+            icon: "fas fa-spa",
+            desc: "Practice 10 minutes of mindfulness meditation to calm anxious thoughts.",
+            ref: "Keng, S.-L., Smoski, M.J., & Robins, C.J. (2011). Effects of mindfulness on psychological health. Clinical Psychology Review.",
+            url: "https://doi.org/10.1016/j.cpr.2010.03.005"
+        },
+        {
+            title: "Nature Walk",
+            icon: "fas fa-tree",
+            desc: "Spend time in nature to reduce anxiety and improve mood.",
+            ref: "Bratman, G.N., et al. (2015). Nature experience reduces rumination and subgenual prefrontal cortex activation. Proceedings of the National Academy of Sciences.",
+            url: "https://doi.org/10.1073/pnas.1510459112"
+        }
+    ],
+    'Stress': [
+        {
+  title: "Progressive Muscle Relaxation",
+  icon: "fas fa-hands",
+  desc: "Practice tensing and relaxing muscle groups to relieve physical stress.",
+  ref: "Webster, K.E. et al. (2025). Effectiveness of stress management and relaxation interventions for hypertension and prehypertension. BMJ Open.",
+  url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12164322/"
+},
+
+        {
+  "title": "Guided Imagery",
+  "icon": "fas fa-cloud",
+  "desc": "Use visualization techniques to create a peaceful mental space.",
+  "ref": "Carroll, R.C. (2022). Guided imagery: Harnessing the power of imagination to combat workplace stress for health care professionals. *Journal of Interprofessional Education & Practice*, Elsevier.",
+  "url": "https://www.sciencedirect.com/science/article/pii/S2405452622000258"
+}
+
+    ],
+
+    'Bipolar': [
+      {
+  "title": "Sleep Schedule",
+  "icon": "fas fa-bed",
+  "desc": "Maintain a consistent sleep schedule to help regulate mood patterns.",
+  "ref": "Yeom, J.W., Park, S., & Lee, H.J. (2024). Managing circadian rhythms: A key to enhancing mental health in college students. Psychiatry Investigation.",
+  "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11704804/"
+},
+       {
+  "title": "Mood Tracking",
+  "icon": "fas fa-chart-line",
+  "desc": "Use digital self-monitoring tools to consistently track your mood and identify early warning signs of bipolar episodes.",
+  "ref": "Morton, E., Hole, R., O'Brien, H., Li, L.C., & Barnes, S.J. (2025). The experience of self-monitoring using the PolarUs bipolar disorder self-management app: A qualitative report of impacts and unmet needs. Journal of Affective Disorders.",
+  "url": "https://www.sciencedirect.com/science/article/pii/S0165032725006822"
+}
+
+    ],
+    'Personality disorder': [
+        {
+            title: "Therapeutic Journaling",
+            icon: "fas fa-book-medical",
+            desc: "Use journaling to explore patterns and emotional triggers.",
+            ref: "Baikie, K.A., & Wilhelm, K. (2005). Emotional and physical health benefits of expressive writing. Advances in Psychiatric Treatment.",
+            url: "https://doi.org/10.1192/apt.11.5.338"
+        },
+        {
+            title: "Regular Counseling",
+            icon: "fas fa-comments",
+            desc: "Engage in consistent therapy sessions for long-term support.",
+            ref: "National Institute of Mental Health. (2022). Borderline Personality Disorder - Treatment and Therapies.",
+            url: "https://www.nimh.nih.gov/health/topics/borderline-personality-disorder"
+        }
+    ]
+};
+
 
         // Music recommendations by sentiment
         const musicRecommendations = {
@@ -599,7 +617,10 @@
                         ${activity.title}
                     </div>
                     <div class="activity-desc">${activity.desc}</div>
-                    <div class="journal-ref">Reference: <a href="#" target="_blank">${activity.ref}</a></div>
+                    <div class="journal-ref">
+                      Reference: <a href="${activity.url}" target="_blank" rel="noopener noreferrer">
+        ${activity.ref}
+        </a>
                 `;
                 
                 activityRecommendationsDiv.appendChild(activityCard);
